@@ -96,7 +96,6 @@ function initAudioPlayer() {
   const iframe = document.getElementById('youtube-player');
   const currentTitle = document.getElementById('current-track-title');
   const currentPerformer = document.getElementById('current-track-performer');
-  const currentYtLink = document.getElementById('current-track-yt-link');
   const playlistItems = document.querySelectorAll('#yt-playlist-container .playlist-item');
 
   if (!iframe || !playlistItems.length) return;
@@ -110,7 +109,6 @@ function initAudioPlayer() {
       const videoId = item.getAttribute('data-videoid');
       const title = item.getAttribute('data-title');
       const performer = item.getAttribute('data-performer');
-      const url = item.getAttribute('data-url');
 
       if (videoId && iframe) {
         // Load and autoplay YouTube video
@@ -119,10 +117,6 @@ function initAudioPlayer() {
 
       if (currentTitle) currentTitle.textContent = title;
       if (currentPerformer) currentPerformer.textContent = performer;
-      if (currentYtLink) {
-        currentYtLink.href = url;
-        currentYtLink.textContent = url.includes('instagram') ? 'Instagram 릴스 보기 ↗' : (url.includes('naver') ? '네이버 인물정보 ↗' : 'YouTube에서 크게 보기 ↗');
-      }
     });
   });
 }
@@ -140,11 +134,14 @@ function initCalculator() {
   if (!lineupSelect || !priceDisplay) return;
 
   function calculateQuote() {
-    // Base prices by lineup (순수 연주 용역 기준)
-    // Trio: 120만원, Quartet: 180만원, Crossover: 240만원
+    // Base prices by lineup (순수 연주 용역 기준, 만원 단위)
+    // Trio: 120, Quartet: 180, Chamber: 420, String Orchestra: 850, Grand Orchestra: 1650, Crossover: 240
     let basePrice = 120;
     const lineupVal = lineupSelect.value;
     if (lineupVal === 'quartet') basePrice = 180;
+    if (lineupVal === 'chamber') basePrice = 420;
+    if (lineupVal === 'string-orchestra') basePrice = 850;
+    if (lineupVal === 'grand-orchestra') basePrice = 1650;
     if (lineupVal === 'crossover') basePrice = 240;
 
     // Multiplier by duration / format
@@ -159,13 +156,16 @@ function initCalculator() {
     // Location add-on
     const locationVal = locationSelect ? locationSelect.value : 'capital';
     if (locationVal === 'local') {
-      calculated += 30; // 지방 출장비
+      if (lineupVal === 'grand-orchestra') calculated += 150;
+      else if (lineupVal === 'string-orchestra') calculated += 80;
+      else if (lineupVal === 'chamber') calculated += 50;
+      else calculated += 30; // 지방 출장비
     }
 
     const minPrice = Math.round(calculated * 0.95);
     const maxPrice = Math.round(calculated * 1.1);
 
-    priceDisplay.textContent = `${minPrice}만 ~ ${maxPrice}만원`;
+    priceDisplay.textContent = `${minPrice.toLocaleString()}만 ~ ${maxPrice.toLocaleString()}만원`;
     if (quoteSummaryNote) {
       quoteSummaryNote.textContent = `(순수 연주료 기준 / 부가세 별도 / 편성: ${lineupSelect.options[lineupSelect.selectedIndex].text})`;
     }
@@ -176,7 +176,6 @@ function initCalculator() {
       element.addEventListener('change', calculateQuote);
     }
   });
-
 
   // Run initial calculation
   calculateQuote();

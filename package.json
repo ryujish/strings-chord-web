@@ -1,0 +1,27 @@
+{
+  "name": "strings-chord-web",
+  "version": "1.0.0",
+  "description": "스트링스 코드 (STRINGS CHORD) - 프리미엄 현악 앙상블 에이전시 공식 웹사이트 & 랜딩페이지",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "npx serve .",
+    "verify": "node -e \"const fs = require('fs'); ['index.html', 'assets/css/style.css', 'assets/js/main.js', 'quotation.html', 'TARGET_AGENCY_DATABASE.md'].forEach(f => { if (!fs.existsSync(f)) throw new Error('Missing: ' + f); }); console.log('✅ All core website and sales files verified!');\""
+  },
+  "keywords": [
+    "strings-chord",
+    "string-ensemble",
+    "violin",
+    "viola",
+    "cello",
+    "event-agency",
+    "corporate-performance"
+  ],
+  "author": "STRINGS CHORD",
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^5.4.2"
+  }
+}

@@ -91,32 +91,81 @@ function initPackageTabs() {
   });
 }
 
-/* 2. Interactive YouTube Video/Audio Player */
+/* 2. Interactive Audio Player Preview */
 function initAudioPlayer() {
-  const iframe = document.getElementById('youtube-player');
+  const tracks = [
+    { title: "사랑의 인사 (Salut d'Amour)", composer: "E. Elgar · 클래식 명곡", duration: "03:12", icon: "🎻", videoId: "Rrn1aQ5v_4k" },
+    { title: "시네마 천국 (Cinema Paradiso)", composer: "Ennio Morricone · 시네마 OST", duration: "03:45", icon: "🎬", videoId: "1FzVWlOKeLs" },
+    { title: "리베르탱고 (Libertango)", composer: "A. Piazzolla · 누에보 탱고", duration: "02:58", icon: "🔥", videoId: "kghJzPqJ_J0" },
+    { title: "사계 중 '여름' 3악장 프레스토", composer: "A. Vivaldi · 다이내믹 오프닝", duration: "03:05", icon: "⚡", videoId: "g65oWFMSoK0" },
+    { title: "Viva La Vida (현악 앙상블 편곡)", composer: "Coldplay · 모던 팝 클래식", duration: "03:40", icon: "✨", videoId: "1fRfg8iX2n8" },
+    { title: "Por Una Cabeza (여인의 향기)", composer: "Carlos Gardel · 영화 음악", duration: "03:15", icon: "🌹", videoId: "Gcxv7i02lXc" }
+  ];
+
+  const playPauseBtn = document.getElementById('play-pause-btn');
+  const waveBars = document.getElementById('wave-bars');
   const currentTitle = document.getElementById('current-track-title');
-  const currentPerformer = document.getElementById('current-track-performer');
-  const playlistItems = document.querySelectorAll('#yt-playlist-container .playlist-item');
+  const currentComposer = document.getElementById('current-track-composer');
+  const trackArtwork = document.getElementById('track-artwork');
+  const nowPlayingCard = document.querySelector('.now-playing');
+  const playlistItems = document.querySelectorAll('#audio-playlist-container .playlist-item');
+  const hiddenAudioStream = document.getElementById('hidden-audio-stream');
 
-  if (!iframe || !playlistItems.length) return;
+  let isPlaying = false;
+  let currentTrackIndex = 0;
 
-  playlistItems.forEach(item => {
-    item.addEventListener('click', () => {
-      // Remove active from all
-      playlistItems.forEach(i => i.classList.remove('active'));
-      item.classList.add('active');
+  function updateTrack(index, autoPlay = true) {
+    currentTrackIndex = index;
+    const track = tracks[index];
+    if (currentTitle) currentTitle.textContent = track.title;
+    if (currentComposer) currentComposer.textContent = track.composer;
+    if (trackArtwork) trackArtwork.textContent = track.icon;
 
-      const videoId = item.getAttribute('data-videoid');
-      const title = item.getAttribute('data-title');
-      const performer = item.getAttribute('data-performer');
+    playlistItems.forEach((item, i) => {
+      item.classList.toggle('active', i === index);
+    });
 
-      if (videoId && iframe) {
-        // Load and autoplay YouTube video
-        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1&rel=0`;
+    if (autoPlay) {
+      isPlaying = true;
+      if (playPauseBtn) playPauseBtn.innerHTML = '⏸';
+      if (waveBars) waveBars.classList.add('playing');
+      if (nowPlayingCard) nowPlayingCard.classList.add('playing');
+      if (hiddenAudioStream) {
+        hiddenAudioStream.src = `https://www.youtube.com/embed/${track.videoId}?autoplay=1&enablejsapi=1&playsinline=1`;
       }
+    }
+  }
 
-      if (currentTitle) currentTitle.textContent = title;
-      if (currentPerformer) currentPerformer.textContent = performer;
+  function togglePlay() {
+    isPlaying = !isPlaying;
+    const track = tracks[currentTrackIndex];
+
+    if (playPauseBtn) {
+      playPauseBtn.innerHTML = isPlaying ? '⏸' : '▶';
+    }
+    if (waveBars) {
+      waveBars.classList.toggle('playing', isPlaying);
+    }
+    if (nowPlayingCard) {
+      nowPlayingCard.classList.toggle('playing', isPlaying);
+    }
+
+    if (hiddenAudioStream) {
+      if (isPlaying) {
+        hiddenAudioStream.src = `https://www.youtube.com/embed/${track.videoId}?autoplay=1&enablejsapi=1&playsinline=1`;
+      } else {
+        hiddenAudioStream.src = '';
+      }
+    }
+  }
+
+  if (playPauseBtn) {
+    playPauseBtn.addEventListener('click', togglePlay);
+  }
+
+  playlistItems.forEach((item, index) => {
+    item.addEventListener('click', () => {
+      updateTrack(index, true);
     });
   });
 }

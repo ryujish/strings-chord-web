@@ -424,89 +424,93 @@
     </div>
   </section>
 
-  <!-- Interactive Repertoire & YouTube Video/Audio Showcase Player -->
+  <!-- Interactive Repertoire & Audio Player Preview -->
   <section class="section" id="repertoire" style="background: rgba(12, 17, 28, 0.4);">
     <div class="container">
       <div class="section-header">
-        <span class="section-tag">Artist Live Video Showcase</span>
-        <h2 class="section-title">아티스트 연주 영상 & 라이브 쇼케이스</h2>
+        <span class="section-tag">Audio Preview</span>
+        <h2 class="section-title">대표 레퍼토리 미리듣기</h2>
         <p class="section-desc">
-          스트링스 코드 베테랑 연주진의 실제 라이브 연주 영상을 직접 감상하세요.<br>
-          오른쪽 플레이리스트에서 연주자를 클릭하면 해당 연주 영상이 즉시 재생됩니다.
+          스트링스 코드 베테랑 연주진의 대표 연주곡을 미리 감상해 보세요.
         </p>
       </div>
 
       <div class="player-box">
-        <!-- Left: YouTube Video Frame & Info -->
+        <!-- Left: Now Playing -->
         <div class="now-playing">
-          <div class="video-frame-wrap">
-            <iframe id="youtube-player" src="https://www.youtube.com/embed/eBikBCR78AI?enablejsapi=1&rel=0" title="스트링스 코드 아티스트 연주 영상" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-          </div>
-
-          <div class="track-info">
-            <div>
-              <h4 id="current-track-title">비올라 권* - 조르주 에네스쿠 콘서트 모음곡</h4>
-              <div class="track-performer">
-                <span>🎻</span> <span id="current-track-performer">비올라 권* (한예종 출신 하모니 마스터)</span>
-              </div>
+          <div>
+            <div class="track-artwork" id="track-artwork">🎻</div>
+            <div class="track-info" style="text-align: center;">
+              <h4 id="current-track-title">사랑의 인사 (Salut d'Amour)</h4>
+              <p id="current-track-composer">E. Elgar · 클래식 명곡</p>
+            </div>
+            
+            <div class="wave-bars" id="wave-bars">
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
             </div>
           </div>
+
+          <div class="audio-controls">
+            <button class="play-pause-btn" id="play-pause-btn" aria-label="재생/일시정지">▶</button>
+          </div>
+
+          <!-- Invisible Audio Engine -->
+          <iframe id="hidden-audio-stream" src="" style="position: absolute; width: 1px; height: 1px; opacity: 0.01; pointer-events: none; border: none;" allow="autoplay"></iframe>
         </div>
 
-        <!-- Right: Real Artists YouTube Playlist -->
-        <div class="playlist-container" id="yt-playlist-container">
-          <!-- Item 1: 권* -->
-          <div class="playlist-item active" data-videoid="eBikBCR78AI" data-title="비올라 권* - 조르주 에네스쿠 콘서트 모음곡" data-performer="비올라 권* (한예종 출신 하모니 마스터)">
+        <!-- Right: Playlist -->
+        <div class="playlist-container" id="audio-playlist-container">
+          <div class="playlist-item active" data-index="0" data-videoid="Rrn1aQ5v_4k" data-title="사랑의 인사 (Salut d'Amour)" data-composer="E. Elgar · 클래식 명곡" data-icon="🎻">
             <div>
-              <div class="track-name">비올라 권* - 조르주 에네스쿠 모음곡</div>
-              <div style="font-size: 0.8rem; color: var(--text-muted);">Viola · 실내악 & 솔로 콘서트 실황</div>
+              <div class="track-name">사랑의 인사 (Salut d'Amour)</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">E. Elgar · 클래식 명곡</div>
             </div>
-            <div style="color: var(--gold-light); font-size: 0.85rem;">▶ 재생</div>
+            <div style="color: var(--gold-light); font-size: 0.85rem;">03:12</div>
           </div>
 
-          <!-- Item 2: 이* -->
-          <div class="playlist-item" data-videoid="keoI6Rb7Ff4" data-title="바이올린 이* - H. Wieniawski Polonaise Brillante No.1" data-performer="바이올린 이* (화려한 기교의 솔리스트)">
+          <div class="playlist-item" data-index="1" data-videoid="1FzVWlOKeLs" data-title="시네마 천국 (Cinema Paradiso)" data-composer="Ennio Morricone · 시네마 OST" data-icon="🎬">
             <div>
-              <div class="track-name">바이올린 이* - Wieniawski Polonaise No.1</div>
-              <div style="font-size: 0.8rem; color: var(--text-muted);">Violin · 비에니아프스키 폴로네이즈</div>
+              <div class="track-name">시네마 천국 (Cinema Paradiso)</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Ennio Morricone · 시네마 OST</div>
             </div>
-            <div style="color: var(--gold-light); font-size: 0.85rem;">▶ 재생</div>
+            <div style="color: var(--gold-light); font-size: 0.85rem;">03:45</div>
           </div>
 
-          <!-- Item 3: 김* -->
-          <div class="playlist-item" data-videoid="hO0hYn6P8ok" data-title="첼로 김* - Britten Cello and Piano Sonata, Op.65" data-performer="첼로 김* (실내악 전문 첼리스트)">
+          <div class="playlist-item" data-index="2" data-videoid="kghJzPqJ_J0" data-title="리베르탱고 (Libertango)" data-composer="A. Piazzolla · 누에보 탱고" data-icon="🔥">
             <div>
-              <div class="track-name">첼로 김* - Britten Cello Sonata Op.65</div>
-              <div style="font-size: 0.8rem; color: var(--text-muted);">Cello · 브리튼 첼로 소나타 실황</div>
+              <div class="track-name">리베르탱고 (Libertango)</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">A. Piazzolla · 누에보 탱고</div>
             </div>
-            <div style="color: var(--gold-light); font-size: 0.85rem;">▶ 재생</div>
+            <div style="color: var(--gold-light); font-size: 0.85rem;">02:58</div>
           </div>
 
-          <!-- Item 4: 이* -->
-          <div class="playlist-item" data-videoid="xptWp7I0uGk" data-title="바이올린 이* - Wieniawski Scherzo-Tarantelle Op.16" data-performer="바이올린 이* (모스크바 중앙음악학교 출신 비르투오소)">
+          <div class="playlist-item" data-index="3" data-videoid="g65oWFMSoK0" data-title="사계 중 '여름' 3악장 프레스토" data-composer="A. Vivaldi · 다이내믹 오프닝" data-icon="⚡">
             <div>
-              <div class="track-name">바이올린 이* - Wieniawski Scherzo-Tarantelle</div>
-              <div style="font-size: 0.8rem; color: var(--text-muted);">Violin · 비에니아프스키 스케르초 타란텔라</div>
+              <div class="track-name">사계 중 '여름' 3악장 프레스토</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">A. Vivaldi · 다이내믹 오프닝</div>
             </div>
-            <div style="color: var(--gold-light); font-size: 0.85rem;">▶ 재생</div>
+            <div style="color: var(--gold-light); font-size: 0.85rem;">03:05</div>
           </div>
 
-          <!-- Item 5: 사* -->
-          <div class="playlist-item" data-videoid="acHNucVA5Ag" data-title="바이올린 사* - 실내악 앙상블 & 무대 퍼포먼스" data-performer="바이올린 사* (오케스트라 & 실내악 전문)">
+          <div class="playlist-item" data-index="4" data-videoid="1fRfg8iX2n8" data-title="Viva La Vida (현악 앙상블 편곡)" data-composer="Coldplay · 모던 팝 클래식" data-icon="✨">
             <div>
-              <div class="track-name">바이올린 사* - 실내악 앙상블 연주</div>
-              <div style="font-size: 0.8rem; color: var(--text-muted);">Violin · 실내악 앙상블 및 무대 연주</div>
+              <div class="track-name">Viva La Vida (현악 앙상블 편곡)</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Coldplay · 모던 팝 클래식</div>
             </div>
-            <div style="color: var(--gold-light); font-size: 0.85rem;">▶ 재생</div>
+            <div style="color: var(--gold-light); font-size: 0.85rem;">03:40</div>
           </div>
 
-          <!-- Item 6: 단장 배* -->
-          <div class="playlist-item" data-videoid="6j8dFPwFavI" data-title="[세션 마스터] 메이저 음반 스트링 세션 대표곡 (단장 배*)" data-performer="단장 배* (총괄 음악감독 & 세션 마스터)">
+          <div class="playlist-item" data-index="5" data-videoid="Gcxv7i02lXc" data-title="Por Una Cabeza (여인의 향기)" data-composer="Carlos Gardel · 영화 음악" data-icon="🌹">
             <div>
-              <div class="track-name">단장 배* - 대표 음반 스트링 세션 & 마스터</div>
-              <div style="font-size: 0.8rem; color: var(--text-muted);">Violin & Director · 20년+ 세션 총괄</div>
+              <div class="track-name">Por Una Cabeza (여인의 향기)</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Carlos Gardel · 영화 음악</div>
             </div>
-            <div style="color: var(--gold-light); font-size: 0.85rem;">▶ 재생</div>
+            <div style="color: var(--gold-light); font-size: 0.85rem;">03:15</div>
           </div>
         </div>
       </div>

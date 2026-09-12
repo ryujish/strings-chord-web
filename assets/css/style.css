@@ -71,9 +71,13 @@ h1, h2, h3, .brand-font {
 }
 
 .gold-gradient-text {
-  background: linear-gradient(135deg, #fff 10%, #f7e499 50%, #d4af37 100%);
+  display: inline-block;
+  background: linear-gradient(135deg, #FFF9D2 0%, #FFD700 35%, #F59E0B 70%, #D97706 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 18px rgba(255, 215, 0, 0.5)) drop-shadow(0 2px 5px rgba(0, 0, 0, 0.9));
+  font-weight: 900;
+  letter-spacing: -0.01em;
 }
 
 .gold-gradient-badge {

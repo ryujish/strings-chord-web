@@ -99,3 +99,4 @@ jobs:
       - name: Verify live endpoint
         run: |
           curl --fail --silent --show-error --retry 10 --retry-delay 3 https://sc.thinkalong.ai.kr/ | grep -qi 'strings chord'
+          curl --fail --silent --show-error --retry 10 --retry-delay 3 https://sc.thinkalong.ai.kr/quotation.html | grep -qi 'strings chord'

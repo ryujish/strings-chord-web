@@ -1,4 +1,4 @@
-name: Deploy to Server
+name: Deploy Strings Chord
 
 on:
   push:
@@ -6,37 +6,93 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: production-deploy
+  group: strings-chord-production
   cancel-in-progress: false
+
+permissions:
+  contents: read
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+
     steps:
       - uses: actions/checkout@v4
-      - name: Deploy
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npm run verify
+      - run: npm run build
+
+      - name: Prepare SSH key
         env:
           SSH_KEY: ${{ secrets.ORACLE_SSH_KEY }}
-          SERVER_IP: "155.248.163.95"
         run: |
-          install -m 600 /dev/null "$RUNNER_TEMP/ssh-key"
+          test -n "$SSH_KEY"
+          install -m 600 /dev/null "$RUNNER_TEMP/oracle-key"
           if [[ "$SSH_KEY" == *'\n'* ]]; then
-            printf '%b\n' "$SSH_KEY" > "$RUNNER_TEMP/ssh-key"
+            printf '%b\n' "$SSH_KEY" > "$RUNNER_TEMP/oracle-key"
           else
-            printf '%s\n' "$SSH_KEY" > "$RUNNER_TEMP/ssh-key"
+            printf '%s\n' "$SSH_KEY" > "$RUNNER_TEMP/oracle-key"
           fi
-          chmod 600 "$RUNNER_TEMP/ssh-key"
-          ssh_opts=(-i "$RUNNER_TEMP/ssh-key" -o StrictHostKeyChecking=accept-new -o PubkeyAcceptedAlgorithms=+ssh-ed25519)
-          
-          # Prepare directory on server
-          ssh "${ssh_opts[@]}" ubuntu@$SERVER_IP "sudo mkdir -p /opt/strings-chord && sudo chown ubuntu:ubuntu /opt/strings-chord"
-          
-          # Create tar archive
-          tar -czf "$RUNNER_TEMP/deploy.tar.gz" --exclude=.git --exclude=node_modules --exclude=dist .
-          
-          # Upload
-          scp "${ssh_opts[@]}" "$RUNNER_TEMP/deploy.tar.gz" ubuntu@$SERVER_IP:/tmp/deploy.tar.gz
-          
-          # Extract and deploy
-          ssh "${ssh_opts[@]}" ubuntu@$SERVER_IP "tar -xzf /tmp/deploy.tar.gz -C /opt/strings-chord && rm -f /tmp/deploy.tar.gz"
-          ssh "${ssh_opts[@]}" ubuntu@$SERVER_IP "cd /opt/strings-chord && sudo docker compose up -d --build"
+          chmod 600 "$RUNNER_TEMP/oracle-key"
+          ssh-keygen -y -f "$RUNNER_TEMP/oracle-key" >/dev/null
+
+      - name: Upload production files
+        env:
+          SERVER_IP: 155.248.163.95
+          SERVER_USER: opc
+        run: |
+          ssh_opts=(-i "$RUNNER_TEMP/oracle-key" -o StrictHostKeyChecking=accept-new -o PubkeyAcceptedAlgorithms=+ssh-ed25519 -o ServerAliveInterval=30 -o ServerAliveCountMax=20)
+          tar -czf "$RUNNER_TEMP/strings-chord-dist.tar.gz" -C dist .
+          scp "${ssh_opts[@]}" "$RUNNER_TEMP/strings-chord-dist.tar.gz" "$SERVER_USER@$SERVER_IP:/tmp/strings-chord-dist.tar.gz"
+          scp "${ssh_opts[@]}" deploy/sc.conf "$SERVER_USER@$SERVER_IP:/tmp/strings-chord.conf"
+
+      - name: Configure server and publish
+        env:
+          SERVER_IP: 155.248.163.95
+          SERVER_USER: opc
+        run: |
+          ssh_opts=(-i "$RUNNER_TEMP/oracle-key" -o StrictHostKeyChecking=accept-new -o PubkeyAcceptedAlgorithms=+ssh-ed25519 -o ServerAliveInterval=30 -o ServerAliveCountMax=20)
+          ssh "${ssh_opts[@]}" "$SERVER_USER@$SERVER_IP" 'bash -se' <<'REMOTE'
+          set -euo pipefail
+
+          site_root=/var/www/strings-chord
+          sudo -n install -d -m 0755 "$site_root"
+          sudo -n find "$site_root" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
+          sudo -n tar -xzf /tmp/strings-chord-dist.tar.gz -C "$site_root"
+          sudo -n chown -R opc:opc "$site_root"
+
+          if ! sudo -n test -f /etc/letsencrypt/live/sc.thinkalong.ai.kr/fullchain.pem; then
+            sudo -n tee /etc/nginx/conf.d/sc.conf >/dev/null <<'NGINX'
+          server {
+              listen 80;
+              server_name sc.thinkalong.ai.kr;
+              location /.well-known/acme-challenge/ {
+                  root /var/www/html;
+              }
+              location / {
+                  return 404;
+              }
+          }
+          NGINX
+            sudo -n nginx -t
+            sudo -n systemctl reload nginx
+            sudo -n certbot certonly --webroot -w /var/www/html --non-interactive --agree-tos --register-unsafely-without-email -d sc.thinkalong.ai.kr
+          fi
+
+          sudo -n install -m 0644 /tmp/strings-chord.conf /etc/nginx/conf.d/sc.conf
+          sudo -n nginx -t
+          sudo -n systemctl reload nginx
+          test -s "$site_root/index.html"
+          rm -f /tmp/strings-chord-dist.tar.gz /tmp/strings-chord.conf
+          REMOTE
+
+      - name: Verify live endpoint
+        run: |
+          curl --fail --silent --show-error --retry 10 --retry-delay 3 https://sc.thinkalong.ai.kr/ | grep -qi 'strings chord'

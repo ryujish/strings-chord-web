@@ -5,9 +5,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   initPackageTabs();
   initAudioPlayer();
-  initCalculator();
   initFAQ();
-  initInquiryModal();
   initMobileMenu();
 });
 
@@ -171,66 +169,7 @@ function initAudioPlayer() {
 }
 
 
-/* 3. Interactive Instant Quote Calculator */
-function initCalculator() {
-  const eventTypeSelect = document.getElementById('calc-event-type');
-  const lineupSelect = document.getElementById('calc-lineup');
-  const durationSelect = document.getElementById('calc-duration');
-  const locationSelect = document.getElementById('calc-location');
-  const priceDisplay = document.getElementById('calc-price-result');
-  const quoteSummaryNote = document.getElementById('calc-summary-note');
-
-  if (!lineupSelect || !priceDisplay) return;
-
-  function calculateQuote() {
-    // Base prices by lineup (순수 연주 용역 기준, 만원 단위)
-    // Trio: 120, Quartet: 180, Chamber: 420, String Orchestra: 850, Grand Orchestra: 1650, Crossover: 240
-    let basePrice = 120;
-    const lineupVal = lineupSelect.value;
-    if (lineupVal === 'quartet') basePrice = 180;
-    if (lineupVal === 'chamber') basePrice = 420;
-    if (lineupVal === 'string-orchestra') basePrice = 850;
-    if (lineupVal === 'grand-orchestra') basePrice = 1650;
-    if (lineupVal === 'crossover') basePrice = 240;
-
-    // Multiplier by duration / format
-    const durationVal = durationSelect.value;
-    let durationMultiplier = 1.0;
-    if (durationVal === 'opening') durationMultiplier = 0.85; // 1~2곡 오프닝
-    if (durationVal === '1set') durationMultiplier = 1.0;    // 30분 메인 세트
-    if (durationVal === 'full') durationMultiplier = 1.35;   // 60분 2세트/풀패키지
-
-    let calculated = basePrice * durationMultiplier;
-
-    // Location add-on
-    const locationVal = locationSelect ? locationSelect.value : 'capital';
-    if (locationVal === 'local') {
-      if (lineupVal === 'grand-orchestra') calculated += 150;
-      else if (lineupVal === 'string-orchestra') calculated += 80;
-      else if (lineupVal === 'chamber') calculated += 50;
-      else calculated += 30; // 지방 출장비
-    }
-
-    const minPrice = Math.round(calculated * 0.95);
-    const maxPrice = Math.round(calculated * 1.1);
-
-    priceDisplay.textContent = `${minPrice.toLocaleString()}만 ~ ${maxPrice.toLocaleString()}만원`;
-    if (quoteSummaryNote) {
-      quoteSummaryNote.textContent = `(순수 연주료 기준 / 부가세 별도 / 편성: ${lineupSelect.options[lineupSelect.selectedIndex].text})`;
-    }
-  }
-
-  [eventTypeSelect, lineupSelect, durationSelect, locationSelect].forEach(element => {
-    if (element) {
-      element.addEventListener('change', calculateQuote);
-    }
-  });
-
-  // Run initial calculation
-  calculateQuote();
-}
-
-/* 4. FAQ Accordion */
+/* 3. FAQ Accordion */
 function initFAQ() {
   const faqItems = document.querySelectorAll('.faq-item');
   faqItems.forEach(item => {
@@ -247,68 +186,7 @@ function initFAQ() {
   });
 }
 
-/* 5. Inquiry Modal & Form Handling */
-function initInquiryModal() {
-  const form = document.getElementById('inquiry-form');
-  const dialog = document.getElementById('inquiry-result-dialog');
-  const closeBtn = document.getElementById('dialog-close-btn');
-  const summaryDiv = document.getElementById('dialog-inquiry-summary');
-  const copyBtn = document.getElementById('copy-inquiry-btn');
-
-  if (!form || !dialog) return;
-
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const companyName = document.getElementById('inquiry-company').value;
-    const contactName = document.getElementById('inquiry-name').value;
-    const phone = document.getElementById('inquiry-phone').value;
-    const date = document.getElementById('inquiry-date').value;
-    const note = document.getElementById('inquiry-note').value;
-    const lineupText = document.getElementById('calc-lineup').options[document.getElementById('calc-lineup').selectedIndex].text;
-    const estimatedPrice = document.getElementById('calc-price-result').textContent;
-
-    const summaryText = `[스트링스 코드 행사 섭외 문의]\n• 단체/회사명: ${companyName}\n• 담당자명: ${contactName}\n• 연락처: ${phone}\n• 행사 예정일: ${date}\n• 희망 편성: ${lineupText}\n• 예상 견적: ${estimatedPrice}\n• 문의/요청사항: ${note || '없음'}`;
-
-    if (summaryDiv) {
-      summaryDiv.innerHTML = `
-        <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; font-size: 0.9rem; line-height: 1.7; margin-bottom: 20px; white-space: pre-wrap;">${summaryText}</div>
-      `;
-    }
-
-    dialog.showModal();
-
-    if (copyBtn) {
-      copyBtn.onclick = () => {
-        navigator.clipboard.writeText(summaryText).then(() => {
-          copyBtn.textContent = '✅ 복사 완료!';
-          setTimeout(() => { copyBtn.textContent = '📋 문의 내용 복사하기'; }, 2000);
-        });
-      };
-    }
-  });
-
-  if (closeBtn) {
-    closeBtn.addEventListener('click', () => {
-      dialog.close();
-    });
-  }
-
-  // Close when clicking outside modal
-  dialog.addEventListener('click', (e) => {
-    const dialogDimensions = dialog.getBoundingClientRect();
-    if (
-      e.clientX < dialogDimensions.left ||
-      e.clientX > dialogDimensions.right ||
-      e.clientY < dialogDimensions.top ||
-      e.clientY > dialogDimensions.bottom
-    ) {
-      dialog.close();
-    }
-  });
-}
-
-/* 6. Mobile Menu */
+/* 4. Mobile Menu */
 function initMobileMenu() {
   const menuBtn = document.getElementById('mobile-menu-btn');
   const navMenu = document.getElementById('nav-menu');

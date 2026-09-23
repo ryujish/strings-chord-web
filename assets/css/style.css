@@ -841,57 +841,102 @@ h1, h2, h3, .brand-font {
   line-height: 1.6;
 }
 
-/* KakaoTalk Consultation */
-.consultation-card {
+/* Interactive Quote Calculator */
+.calculator-card {
   max-width: 960px;
   margin: 0 auto;
   padding: 50px;
-  text-align: center;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-gold-bright);
   background: linear-gradient(180deg, rgba(20, 28, 48, 0.95) 0%, rgba(10, 15, 25, 0.98) 100%);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
 }
 
-.consultation-icon {
-  font-size: 2.6rem;
-  margin-bottom: 14px;
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 30px;
 }
 
-.consultation-card h3 {
-  font-size: 1.5rem;
-  color: #fff;
-  margin-bottom: 12px;
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.consultation-card p {
-  color: var(--text-muted);
-  line-height: 1.7;
+.form-group.full-width {
+  grid-column: 1 / -1;
 }
 
-.consultation-list {
-  max-width: 430px;
-  margin: 24px auto 30px;
-  padding: 0;
-  list-style: none;
-  text-align: left;
-}
-
-.consultation-list li {
-  padding: 10px 0;
+.form-group label {
+  font-size: 0.92rem;
+  font-weight: 600;
   color: #e5e7eb;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.consultation-list li::before {
-  content: '✓';
-  margin-right: 10px;
+.form-control {
+  padding: 14px 16px;
+  background: rgba(9, 13, 22, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: var(--transition);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--gold-primary);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #d1d5db;
+  margin-top: 6px;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--gold-primary);
+  cursor: pointer;
+}
+
+/* Quote Estimate Result Display Box */
+.quote-result-box {
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid var(--border-gold-bright);
+  border-radius: var(--radius-md);
+  padding: 24px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.quote-result-label h4 {
+  font-size: 1.15rem;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.quote-result-label p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.quote-contact-value {
+  font-size: 1.5rem;
+  font-weight: 900;
   color: var(--gold-light);
-}
-
-.consultation-note {
-  margin-top: 18px;
-  font-size: 0.9rem;
+  font-family: var(--font-serif);
 }
 
 /* FAQ Accordion */
@@ -1000,6 +1045,24 @@ h1, h2, h3, .brand-font {
   font-size: 0.82rem;
 }
 
+/* Dialog / Modal */
+dialog {
+  border: 1px solid var(--border-gold-bright);
+  border-radius: var(--radius-lg);
+  background: #0c1220;
+  color: #fff;
+  padding: 36px;
+  max-width: 520px;
+  width: 90%;
+  margin: auto;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+}
+
 /* Floating Action / Contact Button */
 .floating-contact-bar {
   position: fixed;
@@ -1029,6 +1092,11 @@ h1, h2, h3, .brand-font {
   color: #191919;
 }
 
+.float-call {
+  background: linear-gradient(135deg, #d4af37, #997c1e);
+  color: #090d16;
+}
+
 .float-btn:hover {
   transform: translateY(-3px) scale(1.02);
 }
@@ -1040,6 +1108,7 @@ h1, h2, h3, .brand-font {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .package-content { grid-template-columns: 1fr; padding: 24px; }
   .player-box { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; }
 }
 
@@ -1048,5 +1117,5 @@ h1, h2, h3, .brand-font {
   .mobile-menu-btn { display: block; }
   .hero-title { font-size: 2.1rem; }
   .hero-subtitle { font-size: 1.05rem; }
-  .consultation-card { padding: 32px 22px; }
+  .quote-result-box { flex-direction: column; gap: 12px; text-align: center; }
 }

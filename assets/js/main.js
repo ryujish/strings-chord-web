@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initPackageTabs();
   initAudioPlayer();
   initFAQ();
+  initInquiryModal();
   initMobileMenu();
 });
 
@@ -186,7 +187,66 @@ function initFAQ() {
   });
 }
 
-/* 4. Mobile Menu */
+/* 5. Inquiry Modal & Form Handling */
+function initInquiryModal() {
+  const form = document.getElementById('inquiry-form');
+  const dialog = document.getElementById('inquiry-result-dialog');
+  const closeBtn = document.getElementById('dialog-close-btn');
+  const summaryDiv = document.getElementById('dialog-inquiry-summary');
+  const copyBtn = document.getElementById('copy-inquiry-btn');
+
+  if (!form || !dialog) return;
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const companyName = document.getElementById('inquiry-company').value;
+    const contactName = document.getElementById('inquiry-name').value;
+    const phone = document.getElementById('inquiry-phone').value;
+    const date = document.getElementById('inquiry-date').value;
+    const note = document.getElementById('inquiry-note').value;
+    const lineupText = document.getElementById('calc-lineup').options[document.getElementById('calc-lineup').selectedIndex].text;
+    const summaryText = `[스트링스 코드 행사 섭외 문의]\n• 단체/회사명: ${companyName}\n• 담당자명: ${contactName}\n• 연락처: ${phone}\n• 행사 예정일: ${date}\n• 희망 편성: ${lineupText}\n• 문의/요청사항: ${note || '없음'}`;
+
+    if (summaryDiv) {
+      summaryDiv.innerHTML = `
+        <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; font-size: 0.9rem; line-height: 1.7; margin-bottom: 20px; white-space: pre-wrap;">${summaryText}</div>
+      `;
+    }
+
+    dialog.showModal();
+
+    if (copyBtn) {
+      copyBtn.onclick = () => {
+        navigator.clipboard.writeText(summaryText).then(() => {
+          copyBtn.textContent = '✅ 복사 완료!';
+          setTimeout(() => { copyBtn.textContent = '📋 문의 내용 복사하기'; }, 2000);
+        });
+      };
+    }
+  });
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      dialog.close();
+    });
+  }
+
+  // Close when clicking outside modal
+  dialog.addEventListener('click', (e) => {
+    const dialogDimensions = dialog.getBoundingClientRect();
+    if (
+      e.clientX < dialogDimensions.left ||
+      e.clientX > dialogDimensions.right ||
+      e.clientY < dialogDimensions.top ||
+      e.clientY > dialogDimensions.bottom
+    ) {
+      dialog.close();
+    }
+  });
+}
+
+/* 6. Mobile Menu */
 function initMobileMenu() {
   const menuBtn = document.getElementById('mobile-menu-btn');
   const navMenu = document.getElementById('nav-menu');

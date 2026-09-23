@@ -1,48 +1,42 @@
-name: Deploy to GitHub Pages
+name: Deploy to Server
 
 on:
   push:
-    branches: ["main", "master", "create-string-agency"]
+    branches: [main, master]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 concurrency:
-  group: "pages"
-  cancel-in-progress: true
+  group: production-deploy
+  cancel-in-progress: false
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm ci || npm install
-      - name: Build
-        run: npm run build
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './dist'
-
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: build
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - uses: actions/checkout@v4
+      - name: Deploy
+        env:
+          SSH_KEY: ${{ secrets.ORACLE_SSH_KEY }}
+          SERVER_IP: "155.248.163.95"
+        run: |
+          install -m 600 /dev/null "$RUNNER_TEMP/ssh-key"
+          if [[ "$SSH_KEY" == *'\n'* ]]; then
+            printf '%b\n' "$SSH_KEY" > "$RUNNER_TEMP/ssh-key"
+          else
+            printf '%s\n' "$SSH_KEY" > "$RUNNER_TEMP/ssh-key"
+          fi
+          chmod 600 "$RUNNER_TEMP/ssh-key"
+          ssh_opts=(-i "$RUNNER_TEMP/ssh-key" -o StrictHostKeyChecking=accept-new -o PubkeyAcceptedAlgorithms=+ssh-ed25519)
+          
+          # Prepare directory on server
+          ssh "${ssh_opts[@]}" ubuntu@$SERVER_IP "sudo mkdir -p /opt/strings-chord && sudo chown ubuntu:ubuntu /opt/strings-chord"
+          
+          # Create tar archive
+          tar -czf "$RUNNER_TEMP/deploy.tar.gz" --exclude=.git --exclude=node_modules --exclude=dist .
+          
+          # Upload
+          scp "${ssh_opts[@]}" "$RUNNER_TEMP/deploy.tar.gz" ubuntu@$SERVER_IP:/tmp/deploy.tar.gz
+          
+          # Extract and deploy
+          ssh "${ssh_opts[@]}" ubuntu@$SERVER_IP "tar -xzf /tmp/deploy.tar.gz -C /opt/strings-chord && rm -f /tmp/deploy.tar.gz"
+          ssh "${ssh_opts[@]}" ubuntu@$SERVER_IP "cd /opt/strings-chord && sudo docker compose up -d --build"

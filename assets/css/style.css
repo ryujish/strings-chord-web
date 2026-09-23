@@ -495,64 +495,6 @@ h1, h2, h3, .brand-font {
   color: #fff;
 }
 
-/* Streaming Video Gallery */
-.video-gallery {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
-  margin-top: 40px;
-}
-
-.video-card {
-  overflow: hidden;
-  border: 1px solid var(--border-gold);
-  border-radius: var(--radius-lg);
-  background: rgba(16, 23, 38, 0.86);
-  transition: var(--transition);
-}
-
-.video-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--gold-primary);
-  box-shadow: 0 12px 30px rgba(212, 175, 55, 0.15);
-}
-
-.video-frame-wrap {
-  aspect-ratio: 16 / 9;
-  background: #090d16;
-}
-
-.video-frame-wrap iframe {
-  display: block;
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-
-.video-card-content {
-  padding: 18px 20px 22px;
-}
-
-.video-card-tag {
-  color: var(--gold-light);
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.video-card h3 {
-  margin: 8px 0 0;
-  color: #fff;
-  font-size: 1.15rem;
-}
-
-.video-card p {
-  margin: 10px 0 0;
-  color: var(--text-muted);
-  line-height: 1.6;
-}
-
 /* Lineup Packages */
 .lineups-grid {
   display: grid;
@@ -1144,5 +1086,4 @@ dialog::backdrop {
   .mobile-menu-btn { display: block; }
   .hero-title { font-size: 2.1rem; }
   .hero-subtitle { font-size: 1.05rem; }
-  .video-gallery { grid-template-columns: 1fr; }
 }

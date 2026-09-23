@@ -69,6 +69,7 @@ jobs:
           sudo -n chown -R opc:opc "$site_root"
 
           if ! sudo -n test -f /etc/letsencrypt/live/sc.thinkalong.ai.kr/fullchain.pem; then
+            sudo -n install -d -m 0755 /var/www/html
             sudo -n tee /etc/nginx/conf.d/sc.conf >/dev/null <<'NGINX'
           server {
               listen 80;

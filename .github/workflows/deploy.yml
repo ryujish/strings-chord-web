@@ -67,9 +67,11 @@ jobs:
           sudo -n find "$site_root" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
           sudo -n tar -xzf /tmp/strings-chord-dist.tar.gz -C "$site_root"
           sudo -n chown -R opc:opc "$site_root"
+          sudo -n restorecon -R "$site_root"
 
           if ! sudo -n test -f /etc/letsencrypt/live/sc.thinkalong.ai.kr/fullchain.pem; then
             sudo -n install -d -m 0755 /var/www/html
+            sudo -n restorecon -R /var/www/html
             sudo -n tee /etc/nginx/conf.d/sc.conf >/dev/null <<'NGINX'
           server {
               listen 80;
